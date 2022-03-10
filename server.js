@@ -4,6 +4,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const morgan = require("morgan");
+const bcrypt = require('bcryptjs')
 
 const mongoose = require("mongoose");
 
@@ -31,6 +32,7 @@ const ProfileSchema = new mongoose.Schema({
     image: String,
     email: String,
     password: String,
+    currentSession: String,
     cocktails: [CocktailSchema],
     ingredients: [IngredientSchema]
 });
@@ -80,5 +82,58 @@ app.delete("/profile/:id", async (req, res) => {
         res.status(400).json(error);
     }
 });
+
+app.get('/register', function (req, res) {
+    res.render('register.ejs');
+})
+
+app.get('/login', function (req, res) {
+    res.render('login.ejs');
+})
+
+app.post('/register', async function (req, res) {
+    try {
+        const foundProfile = await Profile.exists({email: req.body.email});
+        if (foundProfile) {
+            return res.redirect('/login')
+        }
+        const salt = await bcrypt.genSalt(12);
+        const hash = await bcrypt.hash(req.body.password, salt);
+        req.body.password = hash;
+        const newProfile = await User.create(req.body);
+        return res.redirect('/login');
+    } catch (err) {
+        return res.send(err);
+    }
+});
+
+app.post('/login', async function (req, res) {
+    try {
+        const foundProfile = await Profile.findOne({email: req.body.email});
+        if (!foundProfile) return res.send('Either email or password is incorrect.');
+        const match = await bcrypt.compare(req.body.password, foundProfile.password);
+        if (!match) return res.send('Either email or password is incorrect.');
+        req.session.currentProfile = {
+            id: foundProfile._id,
+            username: foundProfile.email
+        };
+        const foundProf = await req.session.currentUser.id
+        const foundSession = req.session.id
+        const createdSession = await Profile.findByIdAndUpdate(foundProf, {currentSession: foundSession})
+        return res.redirect('/home')
+    } catch (err) {
+        console.log(err);
+        res.send(err);
+    }
+})
+
+app.get('/logout', async function (req, res) {
+    try {
+        req.session.destroy();
+        return res.redirect('/home');
+    } catch (error) {
+        return res.send(error);
+    }
+})
 
 app.listen(PORT, () => {});
