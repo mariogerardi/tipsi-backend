@@ -136,6 +136,4 @@ app.get('/logout', async function (req, res) {
     }
 })
 
-app.listen(process.env.PORT || 4000, function(){
-    console.log("Listening on port:", this.address().port, app.settings.env);
-});
+app.listen(process.env.PORT || 4000);
