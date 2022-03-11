@@ -5,6 +5,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const AuthRouter = require("./controllers/auth")
 const ProfileRouter = require("./controllers/profile")
+const {createContext} = require("./controllers/middleware")
 
 app.use(cors());
 app.use(morgan("dev"));
