@@ -19,10 +19,10 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:username", async (req, res) => {
   try {
       res.json(
-          await Profile.findById(req.params.id, req.body)
+          await Profile.findOne(req.params)
       );
   } catch (error) {
       res.status(400).json(error);
