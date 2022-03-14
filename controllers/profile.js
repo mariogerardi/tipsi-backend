@@ -3,11 +3,7 @@ const Profile = require("../models/profile");
 
 const router = Router();
 
-router.get("/", (req, res) => {
-  res.send("Hello, world.");
-});
-
-router.get("/profile", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
       res.json(await Profile.find({}));
   } catch (error) {
@@ -15,7 +11,7 @@ router.get("/profile", async (req, res) => {
   }
 });
 
-router.post("/profile", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
       res.json(await Profile.create(req.body));
   } catch (error) {
@@ -23,7 +19,17 @@ router.post("/profile", async (req, res) => {
   }
 });
 
-router.put("/profile/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
+  try {
+      res.json(
+          await Profile.findById(req.params.id, req.body)
+      );
+  } catch (error) {
+      res.status(400).json(error);
+  }
+});
+
+router.put("/:id", async (req, res) => {
   try {
       res.json(
           await Profile.findByIdAndUpdate(req.params.id, req.body, { new: true })
@@ -33,7 +39,7 @@ router.put("/profile/:id", async (req, res) => {
   }
 });
 
-router.delete("/profile/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
       res.json(await Profile.findByIdAndRemove(req.params.id));
   } catch (error) {
