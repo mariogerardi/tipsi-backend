@@ -32,7 +32,7 @@ router.get("/:username", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
       res.json(
-          await Profile.findByIdAndUpdate({_id: req.params.id}, req.body)
+          await Profile.findByIdAndUpdate(req.params.id, req.body, { new: true })
       );
   } catch (error) {
       res.status(400).json(error);
