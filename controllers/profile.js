@@ -31,8 +31,9 @@ router.get("/:username", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   try {
-        const { newArray } = req.body;
-        const updateArray = await Profile.findByIdAndUpdate(req.params.id, req.body)
+      res.json(
+          await Profile.findByIdAndUpdate(req.params.id, req.body)
+      );
   } catch (error) {
       res.status(400).json(error);
   }
